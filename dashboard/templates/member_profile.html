@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member Profile</title>
+</head>
+<body>
+    <h1>Member's Profile</h1>
+    
+    <p>Welcome, {{ user.username }}!</p>
+
+    {% if project %}
+        <h2>Current Project</h2>
+        <p>Project Name: {{ project.name }}</p>
+    {% else %}
+        <p>You are not currently assigned to any project.</p>
+    {% endif %}
+    
+    <a href="{% url 'manage_skills' %}">Update Skills</a>
+</body>
+</html>
