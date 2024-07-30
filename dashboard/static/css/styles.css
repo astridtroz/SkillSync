@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #1a73e8; /* Blue color similar to the logo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensures body takes full viewport height */
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Increased max-width for more space */
+    width: 100%;
+    height: auto; /* Allow container height to adjust based on content */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.content {
+    text-align: left;
+    margin: 0 auto;
+    width: 100%; /* Ensure content takes full width of container */
+}
+
+.content h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.content form button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1a73e8;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.content form button:hover {
+    background-color: #0f59c7;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #1a73e8; /* Blue color similar to the logo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensures body takes full viewport height */
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Increased max-width for more space */
+    width: 100%;
+    height: auto; /* Allow container height to adjust based on content */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.content {
+    text-align: left;
+    margin: 0 auto;
+    width: 100%; /* Ensure content takes full width of container */
+}
+
+.content h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.content form button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1a73e8;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.content form button:hover {
+    background-color: #0f59c7;
+}

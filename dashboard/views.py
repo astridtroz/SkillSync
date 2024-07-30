@@ -7,7 +7,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.viewsets import ModelViewSet
 from django.contrib import messages
 from .models import CustomUser, Skill
-from .forms import RegistrationForm, LoginForm, SkillAddForm, LeaderProfileForm
+from .forms import RegistrationForm, LoginForm, SkillAddForm, LeaderProfileForm,CustomPasswordResetForm
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.views import PasswordResetView
 
 # Create your views here.
 
@@ -146,9 +149,6 @@ class MemberProfileView(View):
 
 
 
-from django.core.mail import send_mail
-from django.conf import settings
-
 class LeaderProfileView(View):
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -242,3 +242,10 @@ class LeaderProfileView(View):
             'all_skills': Skill.objects.all()[:5],
         }
         return render(request, 'leader_profile.html', context)
+
+
+
+
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm

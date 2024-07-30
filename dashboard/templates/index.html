@@ -1,11 +1,29 @@
-<html>
-    {%block content%}
-    <h1>Welcome User</h1>
-    <p>
-        <a href="{% url 'register' %}"> Register here</a>
-    </p>
-    <p><a href="{% url 'login' %}">Login here</a></p>
-    <a href="{% url 'logout' %}">Logout</a>
-    <p><a href="#">Forgot password? reset here</a></p>
-    {%endblock%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCLTech Themed Page</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
+        <div class="content">
+            {% block content %}
+            <h1>Welcome User</h1>
+            <p>
+                <a href="{% url 'register' %}">Register here</a>
+            </p>
+            <p>
+                <a href="{% url 'login' %}">Login here</a>
+            </p>
+            <p>
+                <a href="#">Forgot password? Reset here</a>
+            </p>
+            {% endblock %}
+        </div>
+    </div>
+</body>
 </html>

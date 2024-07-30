@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Profile</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Member's Profile</h1>
-    
-    <p>Welcome, {{ user.username }}!</p>
+    <div class="container">
+        <h1>Member's Profile</h1>
+        <p>Welcome, {{ user.username }}!</p>
 
-    {% if project %}
-        <h2>Current Project</h2>
-        <p>Project Name: {{ project.name }}</p>
-    {% else %}
-        <p>You are not currently assigned to any project.</p>
-    {% endif %}
+        {% if project %}
+            <h2>Current Project</h2>
+            <p>Project Name: {{ project.name }}</p>
+        {% else %}
+            <p>You are not currently assigned to any project.</p>
+        {% endif %}
+
+        <a href="{% url 'manage_skills' %}" class="btn">Update Skills</a>
+        <p>
+            <a href="{% url 'logout' %}">Logout</a>
+        </p>
+    </div>
     
-    <a href="{% url 'manage_skills' %}">Update Skills</a>
 </body>
 </html>

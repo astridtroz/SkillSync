@@ -1,10 +1,25 @@
-
-{%block content%}
-  <h2>Register</h2>
-  <form method="POST", action="{% url 'register' %}">
-    {%csrf_token%}
-    {{form}}
-    <button type="submit"> Register</button>
-  </form>
-
-{%endblock%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCLTech Themed Registration Page</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
+        <div class="content">
+            {% block content %}
+            <h2>Register</h2>
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Register</button>
+            </form>
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
