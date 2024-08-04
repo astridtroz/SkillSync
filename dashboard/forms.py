@@ -4,21 +4,26 @@ from django.contrib.auth import password_validation
 from .models import CustomUser, Skill, Project
 
 class RegistrationForm(UserCreationForm):
-    email=forms.EmailField(required=True)
-    password1=forms.CharField(
+    email = forms.EmailField(required=True)
+    password1 = forms.CharField(
         label="Password",
+        widget=forms.PasswordInput(),
         help_text=password_validation.password_validators_help_text_html(),
     )
-    password2=forms.CharField(
+    password2 = forms.CharField(
         label="Confirm Password",
+        widget=forms.TextInput(attrs={'type': 'text'}),  # Confirm password visible
     )
+
     class Meta:
-        model= CustomUser
-        fields=('username','email','user_type')
+        model = CustomUser
+        fields = ('username', 'email', 'user_type')
 
 class LoginForm(forms.Form):
     username=forms.CharField(max_length=255)
-    password=forms.CharField(max_length=255)
+    password=forms.CharField(max_length=255,
+                              widget=forms.PasswordInput(),
+                             )
     class Meta:
         model= CustomUser
         fields=('username','password','email')
@@ -26,9 +31,10 @@ class LoginForm(forms.Form):
 class SkillAddForm(forms.ModelForm):
     class Meta:
         model = Skill
-        fields = ['name']
+        fields = ['name', 'competency']
 
     name = forms.CharField(label='New Skill', max_length=100, required=True)
+    competency=forms.ChoiceField(choices=Skill.COMPETENCY_CHOICES, label='Competency Level')
 
 from django import forms
 from .models import Project

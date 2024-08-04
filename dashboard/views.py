@@ -18,6 +18,10 @@ from django.contrib.auth.views import PasswordResetView
 def welcome(request):
     return render(request, 'index.html')
 
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -76,17 +80,17 @@ class ManageSkillsView(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         if not isinstance(user, CustomUser):
-            return redirect('login')  # Redirect if the user is not logged in
+            return redirect('login')
 
         search_query = request.GET.get('search', '')
         all_skills = Skill.objects.all()
-        
+
         if search_query:
             available_skills = all_skills.filter(name__icontains=search_query)
         else:
-            available_skills = all_skills[:4]  # Show only a limited number of skills
-        
-        user_skills = user.skills.all()  # Assuming a ManyToManyField for skills
+            available_skills = all_skills[:4]
+
+        user_skills = user.skills.all()
 
         form = SkillAddForm()
 
@@ -100,20 +104,22 @@ class ManageSkillsView(View):
     def post(self, request, *args, **kwargs):
         user = request.user
         if not isinstance(user, CustomUser):
-            return redirect('login')  # Redirect if the user is not logged in
+            return redirect('login')
 
         if 'add_skill' in request.POST:
             form = SkillAddForm(request.POST)
             if form.is_valid():
                 new_skill_name = form.cleaned_data['name']
-                skill, created = Skill.objects.get_or_create(name=new_skill_name)
+                competency = form.cleaned_data['competency']
+                skill, created = Skill.objects.get_or_create(name=new_skill_name, defaults={'competency': competency})
 
                 if created:
-                    messages.success(request, f'New skill "{new_skill_name}" added successfully.')
+                    messages.success(request, f'New skill "{new_skill_name}" added with competency "{competency}".')
                 else:
-                    messages.info(request, f'Skill "{new_skill_name}" already exists.')
+                    skill.competency = competency
+                    skill.save()
+                    messages.info(request, f'Skill "{new_skill_name}" already exists. Competency updated to "{competency}".')
 
-                # Associate new skill with the user
                 user.skills.add(skill)
                 user.save()
 
@@ -121,9 +127,12 @@ class ManageSkillsView(View):
             selected_skill_ids = request.POST.getlist('skills')
             selected_skills = Skill.objects.filter(id__in=selected_skill_ids)
             for skill in selected_skills:
+                competency = request.POST.get(f'competency_{skill.id}', skill.competency)
+                skill.competency = competency
+                skill.save()
                 user.skills.add(skill)
             user.save()
-            messages.success(request, 'Skills updated successfully.')
+            messages.success(request, 'Skills and competencies updated successfully.')
 
         if 'delete_skill' in request.POST:
             skill_id = request.POST.get('delete_skill')
@@ -136,18 +145,17 @@ class ManageSkillsView(View):
 
 
 class MemberProfileView(View):
-    def get(self,request,*args, **kwargs):
-        user=request.user
-        project=user.project
-        context={
-            'user':user,
-            'project':project,
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        project = user.project
+        user_skills = user.skills.all()  # Fetch the member's skills
+        context = {
+            'user': user,
+            'project': project,
+            'user_skills': user_skills,  # Pass the skills to the template
         }
 
         return render(request, 'member_profile.html', context)
-
-
-
 
 class LeaderProfileView(View):
     def get(self, request, *args, **kwargs):
@@ -155,11 +163,20 @@ class LeaderProfileView(View):
         project = user.project
         project_form = LeaderProfileForm()
         all_skills = Skill.objects.all()[:5]
+
+        if project:
+            occupied_with_current_project = CustomUser.objects.filter(
+                project=project, user_type='member'
+            )
+        else:
+            occupied_with_current_project = CustomUser.objects.none()
+
         context = {
             'user': user,
             'project': project,
             'project_form': project_form,
             'all_skills': all_skills,
+            'occupied_with_current_project': occupied_with_current_project,
         }
         return render(request, 'leader_profile.html', context)
 
@@ -186,15 +203,14 @@ class LeaderProfileView(View):
 
         elif 'search_members' in request.POST:
             selected_skills_ids = request.POST.getlist('selected_skills')
-            # Filter out empty strings and ensure IDs are integers
             selected_skills_ids = [id for id in selected_skills_ids if id.isdigit()]
             if selected_skills_ids:
                 selected_skills = Skill.objects.filter(id__in=selected_skills_ids)
-                member_with_skills = CustomUser.objects.filter(skills__in=selected_skills).distinct()
-                occupied_members = member_with_skills.filter(project__isnull=False)
+                member_with_skills = CustomUser.objects.filter(skills__in=selected_skills, user_type='member').distinct()
+                all_occupied_members = member_with_skills.filter(project__isnull=False).exclude(project=user.project)
                 free_members = member_with_skills.filter(project__isnull=True)
             else:
-                occupied_members = CustomUser.objects.none()
+                all_occupied_members = CustomUser.objects.none()
                 free_members = CustomUser.objects.none()
 
             context = {
@@ -202,7 +218,8 @@ class LeaderProfileView(View):
                 'project': user.project,
                 'project_form': LeaderProfileForm(),
                 'all_skills': Skill.objects.all()[:5],
-                'occupied_members': occupied_members,
+                'occupied_with_current_project': CustomUser.objects.filter(project=user.project, user_type='member'),
+                'all_occupied_members': all_occupied_members,
                 'free_members': free_members,
             }
             return render(request, 'leader_profile.html', context)
@@ -223,7 +240,7 @@ class LeaderProfileView(View):
 
         elif 'search_leader' in request.POST:
             search_query = request.POST.get('search_query')
-            matching_leaders = CustomUser.objects.filter(username__icontains=(search_query))
+            matching_leaders = CustomUser.objects.filter(username__icontains=search_query, user_type='leader')
 
             context = {
                 'user': user,
@@ -234,18 +251,35 @@ class LeaderProfileView(View):
             }
             return render(request, 'leader_profile.html', context)
 
-        # If none of the conditions match, re-render the form
+        elif 'remove_member' in request.POST:
+            member_id = request.POST.get('member_id')
+            if member_id:
+                try:
+                    member = CustomUser.objects.get(id=member_id, project=user.project, user_type='member')
+                    member.project = None
+                    member.save()
+                except CustomUser.DoesNotExist:
+                    pass  # Handle the case where the member does not exist or is not part of the project
+
+            return redirect('leader_profile')
+
+        elif 'add_member' in request.POST:
+            member_id = request.POST.get('member_id')
+            if member_id:
+                try:
+                    member = CustomUser.objects.get(id=member_id, project__isnull=True, user_type='member')
+                    member.project = user.project
+                    member.save()
+                except CustomUser.DoesNotExist:
+                    pass  # Handle the case where the member does not exist or is already part of a project
+
+            return redirect('leader_profile')
+
         context = {
             'user': user,
             'project': user.project,
             'project_form': LeaderProfileForm(),
             'all_skills': Skill.objects.all()[:5],
+            'occupied_with_current_project': CustomUser.objects.filter(project=user.project, user_type='member'),
         }
         return render(request, 'leader_profile.html', context)
-
-
-
-
-
-class CustomPasswordResetView(PasswordResetView):
-    form_class = CustomPasswordResetForm

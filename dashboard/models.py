@@ -10,6 +10,14 @@ class Project(models.Model):
     
 class Skill(models.Model):
     name=models.CharField(max_length=100, unique=True)
+    COMPETENCY_CHOICES=(
+        ('novice','Novice'),
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('proficient', 'Proficient'),
+        ('expert', 'Expert'),
+    )
+    competency=models.CharField(choices=COMPETENCY_CHOICES, max_length=20)
 
     def __str__(self) -> str:
         return self.name
@@ -42,7 +50,6 @@ class CustomUser(AbstractUser):
         ('leader', 'leader'),
     )
     user_type=models.CharField(max_length=20,choices=ROLE_CHOICE)
-
     username=models.CharField(max_length=150,unique=True,error_messages={'unique':'A user with this username already exists'})
     is_admin = models.BooleanField(default=False)
     skills=models.ManyToManyField(Skill, blank=True,related_name='users')

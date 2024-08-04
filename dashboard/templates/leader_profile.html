@@ -49,13 +49,33 @@
                 <button type="submit" name="search_members">Search members</button>
             </form>
 
-            {% if occupied_members or free_members %}
-                <h2>Team Members with Selected Skills</h2>
+            <h2>Members Overview</h2>
 
-                <h3>Occupied Members</h3>
-                {% if occupied_members %}
+            <h3>Members with Current Project</h3>
+            {% if occupied_with_current_project %}
+                <ul>
+                    {% for member in occupied_with_current_project %}
+                        <li>
+                            {{ member.username }} - Project: {{ member.project.name }}
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="member_id" value="{{ member.id }}">
+                                <button type="submit" name="remove_member">Remove from Project</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No members occupied with the current project.</p>
+            {% endif %}
+
+            {% if all_occupied_members or free_members %}
+                <h3>Team Members with Selected Skills</h3>
+
+                <h4>Occupied Members (Excluding Current Project)</h4>
+                {% if all_occupied_members %}
                     <ul>
-                        {% for member in occupied_members %}
+                        {% for member in all_occupied_members %}
                             <li>{{ member.username }} - Project: {{ member.project.name }}</li>
                         {% endfor %}
                     </ul>
@@ -63,17 +83,24 @@
                     <p>No occupied members found with the selected skills.</p>
                 {% endif %}
 
-                <h3>Free Members</h3>
+                <h4>Free Members</h4>
                 {% if free_members %}
                     <form method="post">
                         {% csrf_token %}
                         <ul>
                             {% for member in free_members %}
-                                <li>{{ member.username }} ({{ member.email }})</li>
+                                <li>
+                                    {{ member.username }} ({{ member.email }})
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="member_id" value="{{ member.id }}">
+                                        <button type="submit" name="add_member">Add to Project</button>
+                                    </form>
+                                </li>
                                 <input type="hidden" name="free_members_emails" value="{{ member.email }}">
                             {% endfor %}
                         </ul>
-                        <h3>Send Emails</h3>
+                        <h4>Send Emails</h4>
                         <p>Search Leader by Username or Enter Email Manually:</p>
                         <input type="text" name="search_query" placeholder="Search leader by username">
                         <button type="submit" name="search_leader">Search Leader</button>
