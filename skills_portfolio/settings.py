@@ -36,7 +36,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
+
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +49,9 @@ INSTALLED_APPS = [
     'dashboard',
     'crispy_forms',
     'widget_tweaks',
+    'userchat',
+    'django_htmx',
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'skills_portfolio.urls'
@@ -76,7 +83,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'skills_portfolio.wsgi.application'
+#WSGI_APPLICATION = 'skills_portfolio.wsgi.application'
+ASGI_APPLICATION='skills_portfolio.asgi.application'
+
+CHANNEL_LAYERS={
+    'default':{
+        "BACKEND":"channels.layers.InMemoryChannelLayer",
+    }
+}
 
 
 # Database
@@ -124,7 +138,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -146,3 +160,6 @@ STATICFILES_DIRS = [
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+RECAPTCHA_PUBLIC_KEY = '6LePZCIqAAAAAKygQlVABjrVq0VCwxoibbscJVHI' 
+RECAPTCHA_PRIVATE_KEY = '6LePZCIqAAAAACJ2qKO1oz5qU38dBAqAb56UCTtF'

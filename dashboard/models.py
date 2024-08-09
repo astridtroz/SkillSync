@@ -8,8 +8,13 @@ class Project(models.Model):
     def __str__(self) -> str:
         return self.name 
     
+    def get_leader(self):
+        # Retrieve the leader associated with this project
+        return CustomUser.objects.filter(project=self, user_type='leader').first()
+    
 class Skill(models.Model):
     name=models.CharField(max_length=100, unique=True)
+    search_keyword= models.CharField(max_length=100, help_text="keyword to search for videos to learn", blank=True)
     COMPETENCY_CHOICES=(
         ('novice','Novice'),
         ('beginner', 'Beginner'),

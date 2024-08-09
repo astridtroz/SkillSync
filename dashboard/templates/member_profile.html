@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,33 +8,65 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
     <div class="container">
         <h1>Member's Profile</h1>
+        {% if user == request.user %}
         <p>Welcome, {{ user.username }}!</p>
+        {% else %}
+        <p> This is {{user.username}} 's profile</p>
+        {% endif%}
 
         {% if project %}
-            <h2>Current Project</h2>
-            <p>Project Name: {{ project.name }}</p>
+        <h2>Current Project</h2>
+        <p>Project Name: {{ project.name }}</p>
+
         {% else %}
-            <p>You are not currently assigned to any project.</p>
+        <p>You are not currently assigned to any project.</p>
         {% endif %}
 
-        <h2>Your Skills</h2>
+        <h2> Skills</h2>
         {% if user_skills %}
-            <ul>
-                {% for skill in user_skills %}
-                    <li>{{ skill.name }} - {{ skill.get_competency_display }}</li>
-                {% endfor %}
-            </ul>
+        <ul>
+            {% for skill in user_skills %}
+            <li>{{ skill.name }} - {{ skill.get_competency_display }}</li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p>You have not added any skills yet.</p>
+        <p> no added skills yet.</p>
         {% endif %}
-
+        {% if user == request.user %}
         <a href="{% url 'manage_skills' %}" class="btn">Update Skills</a>
         <p>
             <a href="{% url 'logout' %}">Logout</a>
         </p>
+        {% endif %}
+        {% if user == request.user %}
+        {% if project %}
+        {% with project.get_leader as leader %}
+        {% if leader %}
+        <p><a href="{% url 'start-chat' leader.username %}">Chat with leader</a></p>
+        {% else %}
+        <p>No leader assigned to this project.</p>
+        {% endif %}
+        {% endwith %}
+        <p><a href="{% url 'team_chat' project.id %}">Chat with team</a></p>
+        {% else %}
+        <p>No project assigned.</p>
+        {% endif %}
+        {% endif %}
+
+        {% if user != request.user %}
+        <p>
+            <button><a href="{% url 'start-chat' user.username %}">Chat with me</a></button>
+        </p>
+        {% endif %}
+        <p>
+            <button><a href="{% url 'learn_skill' %}">Learn skills</a></button>
+        </p>
+
     </div>
 </body>
+
 </html>

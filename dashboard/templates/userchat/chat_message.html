@@ -1,0 +1,35 @@
+{% if message.author == user %}
+<li style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+    <div style="background-color: #d1fae5; border-radius: 0.75rem 0 0 0.75rem; padding: 1rem; max-width: 75%;">
+        <span>{{ message.body }}</span>
+    </div>
+    <div style="display: flex; align-items: flex-end;">
+        <svg height="13" width="8">
+            <path fill="#bbf7d0" d="M6.3,10.4C1.5,8.7,0.9,5.5,0,0.2L0,13l5.2,0C7,13,9.6,11.5,6.3,10.4z"/>
+        </svg>
+    </div>
+</li>
+{% else %}
+<li style="display: flex; margin-bottom: 1rem;">
+    <div style="display: flex; align-items: flex-end; margin-right: 0.5rem;">
+        <a href="">
+            <img src="https://pbs.twimg.com/profile_images/508601156767997952/fFTdKUf2_400x400.jpeg" style="width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover;">
+        </a>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: flex-end;">
+            <div style="background-color: #ffffff; padding: 1rem; max-width: 75%; border-radius: 0 0.75rem 0.75rem 0;">
+                <span>{{ message.body }}</span>
+            </div>
+            <div style="display: flex; align-items: flex-end; margin-left: 0.5rem;">
+                <svg height="13" width="8">
+                    <path fill="white" d="M2.8,13L8,13L8,0.2C7.1,5.5,6.5,8.7,1.7,10.4C-1.6,11.5,1,13,2.8,13z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="font-size: 0.875rem; font-weight: 300; padding-top: 0.25rem;">
+            <span style="color: #9ca3af;">{{ message.author.username }}</span>
+        </div>
+    </div>
+</li>
+{% endif %}

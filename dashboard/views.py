@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -7,10 +7,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.viewsets import ModelViewSet
 from django.contrib import messages
 from .models import CustomUser, Skill
-from .forms import RegistrationForm, LoginForm, SkillAddForm, LeaderProfileForm,CustomPasswordResetForm
+from .forms import *
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse
+import requests
 
 # Create your views here.
 
@@ -57,8 +59,9 @@ def login_view(request):
             user=authenticate(request, username=username, password=password)
             if user :
                 login(request , user)
-                if user.is_member():      
-                   return redirect('member_profile')
+                if user.is_member():
+                         
+                   return redirect(reverse('member_profile', kwargs={'id': user.id}))
                 elif user.is_leader():
                     return redirect('leader_profile')
             
@@ -146,7 +149,8 @@ class ManageSkillsView(View):
 
 class MemberProfileView(View):
     def get(self, request, *args, **kwargs):
-        user = request.user
+        member_id=kwargs.get('id')
+        user=get_object_or_404(CustomUser, id=member_id)
         project = user.project
         user_skills = user.skills.all()  # Fetch the member's skills
         context = {
@@ -180,7 +184,7 @@ class LeaderProfileView(View):
         }
         return render(request, 'leader_profile.html', context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs,):
         user = request.user
 
         if 'create_project' in request.POST:
@@ -218,7 +222,8 @@ class LeaderProfileView(View):
                 'project': user.project,
                 'project_form': LeaderProfileForm(),
                 'all_skills': Skill.objects.all()[:5],
-                'occupied_with_current_project': CustomUser.objects.filter(project=user.project, user_type='member'),
+                'occupied_with_current_project': CustomUser.objects.filter(project=user.project, 
+                                                                           user_type='member',),
                 'all_occupied_members': all_occupied_members,
                 'free_members': free_members,
             }
@@ -283,3 +288,51 @@ class LeaderProfileView(View):
             'occupied_with_current_project': CustomUser.objects.filter(project=user.project, user_type='member'),
         }
         return render(request, 'leader_profile.html', context)
+
+
+def learn_skill(request):
+    form = SkillSearchForm()
+    videos = []
+    skill = None
+    
+    if request.method == 'POST':
+        form = SkillSearchForm(request.POST)
+        if form.is_valid():
+            skill = form.cleaned_data['skill']
+            keyword = form.cleaned_data['keyword']
+            query = f"{skill} {keyword}" if keyword else skill
+            videos = search_youtube(query)
+    
+    return render(request, 'learn_skill.html', {'form': form, 'videos': videos, 'skill': skill})
+
+def search_youtube(query):
+    try:
+        api_key = 'AIzaSyCrEnKkYXJrJApB3EjXBj9NadAVp_Oc6PQ'
+        search_url = 'https://www.googleapis.com/youtube/v3/search'
+
+        params = {
+            'part': 'snippet',
+            'q': query,
+            'key': api_key,
+            'maxResults': 10,
+            'type': 'video'
+        }
+
+        response = requests.get(search_url, params=params)
+        response.raise_for_status()  # Raise an error for bad HTTP status codes
+        results = response.json().get('items', [])
+
+        videos = []
+        for result in results:
+            video_data = {
+                'title': result['snippet']['title'],
+                'url': f"https://www.youtube.com/watch?v={result['id']['videoId']}",
+                'thumbnail': result['snippet']['thumbnails']['default']['url'],
+            }
+            videos.append(video_data)
+
+        return videos
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return []

@@ -1,0 +1,34 @@
+<!-- templates/learn_skill.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn a Skill</title>
+</head>
+<body>
+    <h1>Learn a Skill</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+    
+    {% if skill %}
+        <h2>Videos for {{ skill }}</h2>
+        {% if videos %}
+            <ul>
+                {% for video in videos %}
+                    <li>
+                        <img src="{{ video.thumbnail }}" alt="Thumbnail">
+                        <a href="{{ video.url }}" target="_blank">{{ video.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No videos found</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

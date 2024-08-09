@@ -20,6 +20,7 @@
                     {% csrf_token %}
                     <button type="submit" name="delete_project">Delete Project</button>
                 </form>
+                <p><a href="{% url 'team_chat' project.id %}">Chat with team</a></p>
             {% else %}
                 <h2>Create a New Project</h2>
                 <form method="post">
@@ -76,8 +77,8 @@
                 {% if all_occupied_members %}
                     <ul>
                         {% for member in all_occupied_members %}
-                            <li>{{ member.username }} - Project: {{ member.project.name }}</li>
-                        {% endfor %}
+                           <a href="{% url 'member_profile' member.id  %}"><li>{{ member.username }} - Project: {{ member.project.name }}</li></a> 
+                        {% endfor %} 
                     </ul>
                 {% else %}
                     <p>No occupied members found with the selected skills.</p>
