@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.views import PasswordResetView
 from django.urls import reverse
 import requests
+from assignment.models import *
 
 # Create your views here.
 
@@ -161,6 +162,15 @@ class MemberProfileView(View):
 
         return render(request, 'member_profile.html', context)
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import CustomUser, Skill
+from .forms import LeaderProfileForm
+from django.core.mail import send_mail
+from django.conf import settings
+
 class LeaderProfileView(View):
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -288,22 +298,25 @@ class LeaderProfileView(View):
             'occupied_with_current_project': CustomUser.objects.filter(project=user.project, user_type='member'),
         }
         return render(request, 'leader_profile.html', context)
-
-
+    
 def learn_skill(request):
     form = SkillSearchForm()
     videos = []
     skill = None
+    query = None 
     
     if request.method == 'POST':
         form = SkillSearchForm(request.POST)
         if form.is_valid():
             skill = form.cleaned_data['skill']
             keyword = form.cleaned_data['keyword']
-            query = f"{skill} {keyword}" if keyword else skill
+            if keyword:
+                query = keyword
+            else:
+                query=skill
             videos = search_youtube(query)
     
-    return render(request, 'learn_skill.html', {'form': form, 'videos': videos, 'skill': skill})
+    return render(request, 'learn_skill.html', {'form': form, 'videos': videos, 'skill': query})
 
 def search_youtube(query):
     try:

@@ -1,0 +1,44 @@
+<!-- templates/certificate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Completion</title>
+    <style>
+     
+        body {
+            text-align: center;
+            padding: 50px;
+            font-family: 'Arial', sans-serif;
+        }
+        .certificate {
+            border: 5px solid #000;
+            padding: 50px;
+            margin: 50px auto;
+            width: 600px;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .name {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .description {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <div class="title">Certificate of Completion</div>
+        <div class="name">{{ user.username }}</div>
+        <div class="description">
+            This is to certify that {{ user.username }} has successfully completed the
+            assignment {{ assignment.title }} on {{ date }}.
+        </div>
+    </div>
+</body>
+</html>

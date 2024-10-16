@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Assignments</title>
+    <style>
+        /* CSS styles embedded directly in the HTML file */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .assignment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .assignment-item {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .assignment-link {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .assignment-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-assignments {
+            text-align: center;
+            color: #666;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Assignments</h1>
+        </header>
+        
+        <main>
+            {% if assignments %}
+                <ul class="assignment-list">
+                    {% for assignment in assignments %}
+                        <li class="assignment-item">
+                            <a href="{% url 'view_progress' assignment.id %}" class="assignment-link">
+                                {{ assignment.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-assignments">No assignments found.</p>
+            {% endif %}
+        </main>
+        
+        
+    </div>
+</body>
+</html>

@@ -11,19 +11,16 @@
     <div class="container">
         <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
         <div class="content">
-            {% block content %}
-            <h1>Welcome User</h1>
+            <h1>Welcome to HCLTech</h1>
             <p>
-                <a href="{% url 'register' %}">Register here</a>
+                <a href="{% url 'register' %}">Register</a>
             </p>
             <p>
-                <a href="{% url 'login' %}">Login here</a>
+                <a href="{% url 'login' %}">Login</a>
             </p>
             <p>
-                <a href="{% url 'password_reset' %}">Forgot password? Reset here</a>
+                <a href="{% url 'password_reset' %}">Forgot Password?</a>
             </p>
-            
-            {% endblock %}
         </div>
     </div>
 </body>

@@ -2,128 +2,188 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #ffffff;
-    color: #1a73e8; /* Blue color similar to the logo */
+    background-color: #f1f3f4; /* Light grey background */
+    color: #1a73e8; /* HCLTech Blue */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ensures body takes full viewport height */
+    min-height: 100vh;
 }
 
 .container {
-    text-align: center;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 800px; /* Increased max-width for more space */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    padding: 40px;
     width: 100%;
-    height: auto; /* Allow container height to adjust based on content */
-    display: flex;
-    flex-direction: column; /* Align items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    box-sizing: border-box;
 }
 
 .logo {
-    width: 200px;
-    height: auto;
+    width: 180px;
+    margin-bottom: 30px;
+}
+
+.content h1 {
+    color: #0f59c7; /* Darker blue for headings */
+    font-size: 32px;
     margin-bottom: 20px;
 }
 
-.content {
-    text-align: left;
-    margin: 0 auto;
-    width: 100%; /* Ensure content takes full width of container */
+.content p {
+    margin-bottom: 15px;
 }
 
-.content h2 {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.content form {
-    display: flex;
-    flex-direction: column;
-}
-
-.content form button {
-    margin-top: 20px;
-    padding: 10px;
+.content a {
+    display: inline-block;
+    padding: 10px 20px;
+    width: 200px; /* Fixed width for buttons */
     background-color: #1a73e8;
     color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 
-.content form button:hover {
+.content a:hover {
     background-color: #0f59c7;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #003d66, #0066cc); /* Gradient background */
+    color: #333;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    text-align: left; /* Align content to the left */
+    width: 80%; /* Increased width */
+    max-width: 700px; /* Set a maximum width */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+h1 {
+    color: #003d66;
+    margin-bottom: 1rem;
+    font-size: 1.5rem; /* Adjust font size */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center; /* Centered heading */
+}
+
+form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+button {
+    background-color: #003d66;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem; /* Adjust font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure buttons have equal size */
+}
+
+button:hover {
+    background-color: #00509e;
 }
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #ffffff;
-    color: #1a73e8; /* Blue color similar to the logo */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Ensures body takes full viewport height */
+    min-height: 100vh;
+    background: linear-gradient(135deg, #003d66, #0066cc); /* Gradient background */
+    color: #333;
+    overflow: hidden; /* Prevent scrolling */
 }
 
 .container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem; /* Reduced padding */
     text-align: center;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 800px; /* Increased max-width for more space */
-    width: 100%;
-    height: auto; /* Allow container height to adjust based on content */
-    display: flex;
-    flex-direction: column; /* Align items vertically */
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    width: 70%; /* Reduced width */
+    max-width: 400px; /* Set a maximum width */
+    height: auto; /* Allow height to adjust based on content */
+    box-sizing: border-box;
 }
 
 .logo {
-    width: 200px;
+    width: 120px; /* Adjust logo size */
     height: auto;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
-.content {
+h1 {
+    color: #003d66;
+    margin-bottom: 1rem;
+    font-size: 1.25rem; /* Adjust font size */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+form {
     text-align: left;
-    margin: 0 auto;
-    width: 100%; /* Ensure content takes full width of container */
 }
 
-.content h2 {
-    margin-bottom: 20px;
-    text-align: center;
+.form-group {
+    margin-bottom: 1rem;
 }
 
-.content form {
-    display: flex;
-    flex-direction: column;
-}
-
-.content form button {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1a73e8;
+button {
+    background-color: #003d66;
     color: #ffffff;
     border: none;
-    border-radius: 4px;
+    padding: 0.5rem 1rem; /* Reduced padding for smaller button */
+    border-radius: 8px;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure button takes full width */
 }
 
-.content form button:hover {
-    background-color: #0f59c7;
+button:hover {
+    background-color: #00509e;
 }
-

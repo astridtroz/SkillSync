@@ -18,5 +18,7 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('chat/', include('userchat.urls')),
     path('learn-skill/', views.learn_skill, name='learn_skill'),
+    path('api/' ,include('assignment.urls')),
+    path('calendar/', include('events.urls')),
 
 ]

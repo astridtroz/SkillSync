@@ -5,66 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HCLTech Registration Page</title>
     {% load static %}
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #003d66, #0066cc); /* Gradient background */
-            color: #333;
-            overflow: hidden; /* Prevent scrolling */
-        }
-        .container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            text-align: center;
-            width: 80%; /* Increase width */
-            max-width: 500px; /* Set a maximum width */
-            height: auto; /* Allow height to adjust based on content */
-            box-sizing: border-box;
-        }
-        .logo {
-            width: 150px; /* Adjust logo size */
-            height: auto;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-        }
-        h1 {
-            color: #003d66;
-            margin-bottom: 1rem;
-            font-size: 1.5rem; /* Adjust font size */
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        form {
-            text-align: left;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        button {
-            background-color: #003d66;
-            color: #ffffff;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem; /* Adjust font size */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        button:hover {
-            background-color: #00509e;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <div class="container">
@@ -75,11 +16,12 @@
             {% block content %}
             <h1>Get started!</h1>
             <form method="POST" action="{% url 'register' %}">
+                <button type="submit">Register</button>
                 {% csrf_token %}
                 <div class="form-group">
                     {{ form.as_p }}
                 </div>
-                <button type="submit">Register</button>
+               
             </form>
             
             {% endblock %}

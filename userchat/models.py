@@ -1,6 +1,7 @@
 from django.db import models
 from dashboard.models import CustomUser
 import shortuuid
+from django.utils import timezone
 
 # Create your models here.
 class ChatGroup(models.Model):
@@ -15,11 +16,9 @@ class GroupMessage(models.Model):
     group=models.ForeignKey(ChatGroup, related_name='chat_messages', on_delete=models.CASCADE)
     author=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     body=models.CharField(max_length=300)
-    created=models.DateField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'{self.author.username}:{self.body}'
     
-    class Meta:
-        ordering=['-created']
-
+    

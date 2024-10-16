@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Videos</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/search_videos.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Search Videos</h1>
+            <form method="get" action="{% url 'search_videos' %}">
+                <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search for videos..." required>
+                <button type="submit">Search</button>
+            </form>
+
+            <form method="post">
+                {% csrf_token %}
+                {% for video in videos %}
+                    <div>
+                        <h3>{{ video.title }}</h3>
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.id }}" 
+                            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                        <label>Select this video</label>
+                        <input type="checkbox" name="videos" value="{{ video.id }}">
+                    </div>
+                {% endfor %}
+                <button type="submit">Add to Assignment</button>
+            </form>
+        </div>
+        <div class="content">
+            <!-- create_assignment.html -->
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Assignment</button>
+</form>
+
+        </div>
+    </div>
+</body>
+</html>

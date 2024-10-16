@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Progress</title>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        /* CSS styles embedded directly in the HTML file */
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        
+        h3 {
+            color: #555;
+        }
+        
+        #video-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .video {
+            margin: 10px;
+            text-align: center;
+        }
+        
+        #completeButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #completeButton:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        p {
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Assignment Progress</h1>
+
+        <h2>{{ assignment.title }}</h2>
+
+        {% if videos %}
+            <div id="video-container">
+                {% for video in videos %}
+                    <div class="video">
+                        <h3>{{ video.title }}</h3>
+                        <div id="player-{{ video.id }}"></div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No videos found for this assignment.</p>
+        {% endif %}
+
+        {% if not comp %}
+            <button id="completeButton" disabled>Mark as Complete</button>
+        {% else %}
+            <p>Assignment Completed</p>
+        {% endif %}
+
+        <script>
+            var players = {};
+            var videos = [
+                {% for video in videos %}
+                    {
+                        id: '{{ video.id }}',
+                        youtube_id: '{{ video.youtube_id }}'
+                    }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            function onYouTubeIframeAPIReady() {
+                videos.forEach(function(video) {
+                    players[video.id] = new YT.Player('player-' + video.id, {
+                        height: '390',
+                        width: '640',
+                        videoId: video.youtube_id,
+                        events: {
+                            'onReady': onPlayerReady
+                        }
+                    });
+                });
+            }
+
+            function onPlayerReady(event) {
+                trackProgress();
+            }
+
+            function trackProgress() {
+                setInterval(function() {
+                    var allWatched = true;
+
+                    videos.forEach(function(video) {
+                        var player = players[video.id];
+                        if (player) {
+                            var currentTime = player.getCurrentTime();
+                            var videoDuration = player.getDuration();
+
+                            if (currentTime < videoDuration - 1) {
+                                allWatched = false;
+                            }
+                        }
+                    });
+
+                    if (allWatched) {
+                        document.getElementById('completeButton').disabled = false;
+                    }
+                }, 1000);
+            }
+
+            {% if not comp %}
+            document.getElementById('completeButton').addEventListener('click', function() {
+                fetch('{% url "view_progress" assignment.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: new URLSearchParams({
+                        'completed': 'true'
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                    alert("Assignment marked as complete!");
+                    document.getElementById('completeButton').style.display = 'none';
+                    var message = document.createElement('p');
+                    message.textContent = 'Assignment Completed';
+                    document.body.appendChild(message);
+                  })
+                  .catch(error => console.error('Error:', error));
+            });
+            {% endif %}
+        </script>
+    </div>
+</body>
+</html>

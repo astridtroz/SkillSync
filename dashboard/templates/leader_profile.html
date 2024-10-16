@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <title>Leader Profile</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 </head>
 <body>
     <div class="container">
-        <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
         <div class="content">
             <h1>Leader Profile</h1>
             <p>Welcome, {{ user.username }}!</p>
@@ -20,7 +19,7 @@
                     {% csrf_token %}
                     <button type="submit" name="delete_project">Delete Project</button>
                 </form>
-                <p><a href="{% url 'team_chat' project.id %}">Chat with team</a></p>
+                <p><a href="{% url 'team_chat' project.id %}"><button>Chat with team</button></a></p>
             {% else %}
                 <h2>Create a New Project</h2>
                 <form method="post">
@@ -33,11 +32,14 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    <button type="submit" name="create_project">Create Project</button>
+                    <button type="submit" name="create_project">create project</button>
                 </form>
             {% endif %}
-
-            <h2>Search team members to add to your project</h2>
+          
+            <a href="{% url 'search_videos' %}"><button>Create Assignment</button></a>
+            <a href="{% url 'calendar_view' %}"><button>Event Calendar</button></a>
+            
+            <h2>Search Team Members to Add to Your Project</h2>
             <form method="POST">
                 {% csrf_token %}
                 <ul>
@@ -47,17 +49,17 @@
                         <li>Sorry, no skills available currently</li>
                     {% endfor %}
                 </ul>
-                <button type="submit" name="search_members">Search members</button>
+                <button type="submit" name="search_members">Search Members</button>
             </form>
 
             <h2>Members Overview</h2>
 
-            <h3>Members with Current Project</h3>
             {% if occupied_with_current_project %}
+                <h3>Members with Current Project</h3>
                 <ul>
                     {% for member in occupied_with_current_project %}
                         <li>
-                            {{ member.username }} - Project: {{ member.project.name }}
+                            <a href="{% url 'member_profile' member.id  %}">{{ member.username }}</a>
                             <form method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="member_id" value="{{ member.id }}">
@@ -77,8 +79,8 @@
                 {% if all_occupied_members %}
                     <ul>
                         {% for member in all_occupied_members %}
-                           <a href="{% url 'member_profile' member.id  %}"><li>{{ member.username }} - Project: {{ member.project.name }}</li></a> 
-                        {% endfor %} 
+                            <a href="{% url 'member_profile' member.id  %}"><li>{{ member.username }} - Project: {{ member.project.name }}</li></a> 
+                        {% endfor %}
                     </ul>
                 {% else %}
                     <p>No occupied members found with the selected skills.</p>
@@ -92,20 +94,21 @@
                             {% for member in free_members %}
                                 <li>
                                     {{ member.username }} ({{ member.email }})
+                                    <input type="hidden" name="free_members_emails" value="{{ member.email }}">
                                     <form method="post" style="display:inline;">
                                         {% csrf_token %}
                                         <input type="hidden" name="member_id" value="{{ member.id }}">
                                         <button type="submit" name="add_member">Add to Project</button>
                                     </form>
                                 </li>
-                                <input type="hidden" name="free_members_emails" value="{{ member.email }}">
                             {% endfor %}
                         </ul>
                         <h4>Send Emails</h4>
-                        <p>Search Leader by Username or Enter Email Manually:</p>
+                        <p>Search Leader by Username:</p>
                         <input type="text" name="search_query" placeholder="Search leader by username">
                         <button type="submit" name="search_leader">Search Leader</button>
                         <br>
+                        <p>Or Enter Email Manually:</p>
                         <input type="email" name="leader_email" placeholder="Enter leader email">
                         <button type="submit" name="send_emails">Send Emails</button>
                     </form>
@@ -122,12 +125,14 @@
                         {% for leader in matching_leaders %}
                             <li>
                                 {{ leader.username }} ({{ leader.email }})
-                                <button type="submit" name="send_emails" value="{{ leader.email }}">Send Emails</button>
+                                <input type="radio" name="leader_email" value="{{ leader.email }}">
                             </li>
                         {% endfor %}
                     </ul>
+                    <button type="submit" name="send_emails">Send Emails</button>
                 </form>
             {% endif %}
+           
         </div>
         <p>
             <a href="{% url 'logout' %}">Logout</a>

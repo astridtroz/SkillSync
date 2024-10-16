@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Chat Application</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script> 
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
@@ -16,7 +16,7 @@
             <div class="header">
                 {% if other_user %}
                 <p><span style="display: inline-block; width: 10px; height: 10px; background-color: green; border-radius: 50%;"></span></p>
-                <a href="{% url 'member_profile' other_user.id %}"></a>
+                <a href="{% url 'member_profile' other_user.id %}">{{ other_user.username }}</a>
                 <div>{{other_user.username}}</div>
                 {% else %}
                 <div id="online-icon"></div>
@@ -25,27 +25,24 @@
             </div>
             <div id="chat_container">
                 <ul id="chat_messages">
-                    {% for message in chat_messages  %}
+                    {% for message in chat_messages %}
                     {% include 'userchat/chat_message.html' %}
                     {% endfor %}
                 </ul>
             </div>
             <div class="footer">
-                <form id="chat_message_form" class="w-full"
+                <form id="chat_message_form" class="w-full" 
                     hx-ext="ws"
                     ws-connect="/ws/chatroom/{{ chatroom_name }}"
                     ws-send
                     _="on htmx:wsAfterSend reset() me">
                     {% csrf_token %}
                     {{ form }}
-                    <button type="submit">Send</button>
+                    <button type="submit" onclick="console.log('Form submitted');">Send</button>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Include HTMX library just before the closing </body> tag -->
-    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
     <script>
         function scrollToBottom(){
           const container=document.getElementById('chat_container');

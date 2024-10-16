@@ -1,7 +1,8 @@
 {% if message.author == user %}
 <li style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
     <div style="background-color: #d1fae5; border-radius: 0.75rem 0 0 0.75rem; padding: 1rem; max-width: 75%;">
-        <span>{{ message.body }}</span>
+        <span>{{ message.body }} <br> <small>{{ message.timestamp|date:"F j, Y, g:i a" }}</small></span>
+       
     </div>
     <div style="display: flex; align-items: flex-end;">
         <svg height="13" width="8">
@@ -19,7 +20,8 @@
     <div style="display: flex; flex-direction: column;">
         <div style="display: flex; align-items: flex-end;">
             <div style="background-color: #ffffff; padding: 1rem; max-width: 75%; border-radius: 0 0.75rem 0.75rem 0;">
-                <span>{{ message.body }}</span>
+                <span>{{ message.body }} <br> <small><small>{{ message.timestamp|date:"F j, Y, g:i a" }}</small></small></span>
+                
             </div>
             <div style="display: flex; align-items: flex-end; margin-left: 0.5rem;">
                 <svg height="13" width="8">

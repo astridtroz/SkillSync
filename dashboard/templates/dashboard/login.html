@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>HCLTech Login Page</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <div class="container">
-        <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
-        <div class="content">
-            <h1>Login</h1>
+        <header>
+            <img src="{% static 'images/hcl_logo.png' %}" alt="HCLTech Logo" class="logo">
+        </header>
+        <div>
+            {% block content %}
+            <h1>Get started!</h1>
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
                 <button type="submit">Login</button>
-                <p><a href="{% url 'register' %}">Register first</a></p>
             </form>
+            {% endblock %}
         </div>
     </div>
 </body>

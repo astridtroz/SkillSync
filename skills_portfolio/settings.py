@@ -33,6 +33,16 @@ EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 
 ALLOWED_HOSTS = []
 
+# settings.py
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+
+
 
 # Application definition
 
@@ -47,6 +57,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard',
+    'rest_framework',
+    'assignment',
+    'events',
     'crispy_forms',
     'widget_tweaks',
     'userchat',
@@ -126,11 +139,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE =  'Asia/Kolkata'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
@@ -154,8 +167,11 @@ import os
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static",  # Where your CSS files should be
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Where collectstatic places files
+
 
 # Media files
 MEDIA_URL = '/media/'

@@ -1,34 +1,42 @@
-<!-- templates/learn_skill.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learn a Skill</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/learn_skills.css' %}">
 </head>
+
 <body>
-    <h1>Learn a Skill</h1>
-    
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Search</button>
-    </form>
-    
-    {% if skill %}
-        <h2>Videos for {{ skill }}</h2>
-        {% if videos %}
-            <ul>
-                {% for video in videos %}
-                    <li>
-                        <img src="{{ video.thumbnail }}" alt="Thumbnail">
-                        <a href="{{ video.url }}" target="_blank">{{ video.title }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No videos found</p>
+    <div class="container">
+        <h1>Learn a Skill</h1>
+
+        <form method="post" class="search-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Search</button>
+        </form>
+
+        {% if skill %}
+            <h2>Videos for {{ skill }}</h2>
+            {% if videos %}
+                <ul class="video-list">
+                    {% for video in videos %}
+                        <li class="video-item">
+                            <a href="{{ video.url }}" target="_blank">
+                                <img src="{{ video.thumbnail }}" alt="Thumbnail" class="thumbnail">
+                                <span class="video-title">{{ video.title }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-videos">No videos found</p>
+            {% endif %}
         {% endif %}
-    {% endif %}
+    </div>
 </body>
+
 </html>
