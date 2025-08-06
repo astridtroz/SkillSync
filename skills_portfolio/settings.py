@@ -33,7 +33,7 @@ EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 
 from decouple import config, Csv
 
-ALLOWED_HOSTS = ['skillsync.onrender.com',]
+ALLOWED_HOSTS = ['skillsync-8vf2.onrender.com',]
 
 
 # settings.py
