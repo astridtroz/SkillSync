@@ -1,7 +1,7 @@
-
-from .._core import Automaton, NoTransition
-
 from unittest import TestCase
+
+from .._core import Automaton, NoTransition, Transitioner
+
 
 class CoreTests(TestCase):
     """
@@ -26,6 +26,18 @@ class CoreTests(TestCase):
         self.assertIn(state, str(noTransitionException))
         self.assertIn(symbol, str(noTransitionException))
 
+    def test_unhandledTransition(self) -> None:
+        """
+        Automaton.unhandledTransition sets the outputs and end-state to be used
+        for all unhandled transitions.
+        """
+        a: Automaton[str, str, str] = Automaton("start")
+        a.addTransition("oops-state", "check", "start", tuple(["checked"]))
+        a.unhandledTransition("oops-state", ["oops-out"])
+        t = Transitioner(a, "start")
+        self.assertEqual(t.transition("check"), (tuple(["oops-out"]), None))
+        self.assertEqual(t.transition("check"), (["checked"], None))
+        self.assertEqual(t.transition("check"), (tuple(["oops-out"]), None))
 
     def test_noOutputForInput(self):
         """
@@ -33,9 +45,7 @@ class CoreTests(TestCase):
         transition for that input is defined.
         """
         a = Automaton()
-        self.assertRaises(NoTransition, a.outputForInput,
-                          "no-state", "no-symbol")
-
+        self.assertRaises(NoTransition, a.outputForInput, "no-state", "no-symbol")
 
     def test_oneTransition(self):
         """
@@ -48,10 +58,8 @@ class CoreTests(TestCase):
         a.addTransition("beginning", "begin", "ending", ["end"])
         self.assertEqual(a.inputAlphabet(), {"begin"})
         self.assertEqual(a.outputAlphabet(), {"end"})
-        self.assertEqual(a.outputForInput("beginning", "begin"),
-                         ("ending", ["end"]))
+        self.assertEqual(a.outputForInput("beginning", "begin"), ("ending", ["end"]))
         self.assertEqual(a.states(), {"beginning", "ending"})
-
 
     def test_oneTransition_nonIterableOutputs(self):
         """
@@ -63,12 +71,15 @@ class CoreTests(TestCase):
         self.assertRaises(
             TypeError,
             a.addTransition,
-            "fromState", "viaSymbol", "toState", nonIterableOutputs)
+            "fromState",
+            "viaSymbol",
+            "toState",
+            nonIterableOutputs,
+        )
         self.assertFalse(a.inputAlphabet())
         self.assertFalse(a.outputAlphabet())
         self.assertFalse(a.states())
         self.assertFalse(a.allTransitions())
-
 
     def test_initialState(self):
         """

@@ -1,14 +1,16 @@
-from __future__ import print_function
-import functools
+from __future__ import annotations
 
+import functools
 import os
 import subprocess
+from dataclasses import dataclass
+from typing import Protocol
 from unittest import TestCase, skipIf
 
-import attr
+from automat import TypeMachineBuilder, pep614
 
 from .._methodical import MethodicalMachine
-
+from .._typed import TypeMachine
 from .test_discover import isTwistedInstalled
 
 
@@ -36,29 +38,60 @@ def isGraphvizInstalled():
         os.close(r)
 
 
-
 def sampleMachine():
     """
     Create a sample L{MethodicalMachine} with some sample states.
     """
     mm = MethodicalMachine()
+
     class SampleObject(object):
         @mm.state(initial=True)
         def begin(self):
             "initial state"
+
         @mm.state()
         def end(self):
             "end state"
+
         @mm.input()
         def go(self):
             "sample input"
+
         @mm.output()
         def out(self):
             "sample output"
+
         begin.upon(go, end, [out])
+
     so = SampleObject()
     so.go()
     return mm
+
+
+class Sample(Protocol):
+    def go(self) -> None: ...
+class Core: ...
+
+
+def sampleTypeMachine() -> TypeMachine[Sample, Core]:
+    """
+    Create a sample L{TypeMachine} with some sample states.
+    """
+    builder = TypeMachineBuilder(Sample, Core)
+    begin = builder.state("begin")
+
+    def buildit(proto: Sample, core: Core) -> int:
+        return 3  # pragma: no cover
+
+    data = builder.state("data", buildit)
+    end = builder.state("end")
+    begin.upon(Sample.go).to(data).returns(None)
+    data.upon(Sample.go).to(end).returns(None)
+
+    @pep614(end.upon(Sample.go).to(begin))
+    def out(sample: Sample, core: Core) -> None: ...
+
+    return builder.build()
 
 
 @skipIf(not isGraphvizModuleInstalled(), "Graphviz module is not installed.")
@@ -70,6 +103,7 @@ class ElementMakerTests(TestCase):
 
     def setUp(self):
         from .._visualize import elementMaker
+
         self.elementMaker = elementMaker
 
     def test_sortsAttrs(self):
@@ -77,11 +111,7 @@ class ElementMakerTests(TestCase):
         L{elementMaker} orders HTML attributes lexicographically.
         """
         expected = r'<div a="1" b="2" c="3"></div>'
-        self.assertEqual(expected,
-                         self.elementMaker("div",
-                                           b='2',
-                                           a='1',
-                                           c='3'))
+        self.assertEqual(expected, self.elementMaker("div", b="2", a="1", c="3"))
 
     def test_quotesAttrs(self):
         """
@@ -90,26 +120,25 @@ class ElementMakerTests(TestCase):
         See U{http://www.graphviz.org/doc/info/lang.html}, footnote 1.
         """
         expected = r'<div a="1" b="a \" quote" c="a string"></div>'
-        self.assertEqual(expected,
-                         self.elementMaker("div",
-                                           b='a " quote',
-                                           a=1,
-                                           c="a string"))
+        self.assertEqual(
+            expected, self.elementMaker("div", b='a " quote', a=1, c="a string")
+        )
 
     def test_noAttrs(self):
         """
         L{elementMaker} should render an element with no attributes.
         """
-        expected = r'<div ></div>'
+        expected = r"<div ></div>"
         self.assertEqual(expected, self.elementMaker("div"))
 
 
-@attr.s
+@dataclass
 class HTMLElement(object):
     """Holds an HTML element, as created by elementMaker."""
-    name = attr.ib()
-    children = attr.ib()
-    attributes = attr.ib()
+
+    name: str
+    children: list[HTMLElement]
+    attributes: dict[str, str]
 
 
 def findElements(element, predicate):
@@ -122,9 +151,11 @@ def findElements(element, predicate):
     elif isLeaf(element):
         return []
 
-    return [result
-            for child in element.children
-            for result in findElements(child, predicate)]
+    return [
+        result
+        for child in element.children
+        for result in findElements(child, predicate)
+    ]
 
 
 def isLeaf(element):
@@ -153,8 +184,7 @@ class TableMakerTests(TestCase):
 
         self.inputLabel = "input label"
         self.port = "the port"
-        self.tableMaker = functools.partial(tableMaker,
-                                            _E=self.fakeElementMaker)
+        self.tableMaker = functools.partial(tableMaker, _E=self.fakeElementMaker)
 
     def test_inputLabelRow(self):
         """
@@ -164,12 +194,10 @@ class TableMakerTests(TestCase):
         """
 
         def hasPort(element):
-            return (not isLeaf(element)
-                    and element.attributes.get("port") == self.port)
+            return not isLeaf(element) and element.attributes.get("port") == self.port
 
         for outputLabels in ([], ["an output label"]):
-            table = self.tableMaker(self.inputLabel, outputLabels,
-                                    port=self.port)
+            table = self.tableMaker(self.inputLabel, outputLabels, port=self.port)
             self.assertGreater(len(table.children), 0)
             inputLabelRow = table.children[0]
 
@@ -177,8 +205,7 @@ class TableMakerTests(TestCase):
 
             self.assertEqual(len(portCandidates), 1)
             self.assertEqual(portCandidates[0].name, "td")
-            self.assertEqual(findElements(inputLabelRow, isLeaf),
-                             [self.inputLabel])
+            self.assertEqual(findElements(inputLabelRow, isLeaf), [self.inputLabel])
 
     def test_noOutputLabels(self):
         """
@@ -196,22 +223,24 @@ class TableMakerTests(TestCase):
         equal to the number of output labels and a second row that
         contains the output labels.
         """
-        table = self.tableMaker(self.inputLabel, ("output label 1",
-                                                  "output label 2"),
-                                port=self.port)
+        table = self.tableMaker(
+            self.inputLabel, ("output label 1", "output label 2"), port=self.port
+        )
 
         self.assertEqual(len(table.children), 2)
         inputRow, outputRow = table.children
 
         def hasCorrectColspan(element):
-            return (not isLeaf(element)
-                    and element.name == "td"
-                    and element.attributes.get('colspan') == "2")
+            return (
+                not isLeaf(element)
+                and element.name == "td"
+                and element.attributes.get("colspan") == "2"
+            )
 
-        self.assertEqual(len(findElements(inputRow, hasCorrectColspan)),
-                         1)
-        self.assertEqual(findElements(outputRow, isLeaf), ["output label 1",
-                                                           "output label 2"])
+        self.assertEqual(len(findElements(inputRow, hasCorrectColspan)), 1)
+        self.assertEqual(
+            findElements(outputRow, isLeaf), ["output label 1", "output label 2"]
+        )
 
 
 @skipIf(not isGraphvizModuleInstalled(), "Graphviz module is not installed.")
@@ -223,14 +252,14 @@ class IntegrationTests(TestCase):
     Automat.
     """
 
-    def test_validGraphviz(self):
+    def test_validGraphviz(self) -> None:
         """
-        L{graphviz} emits valid graphviz data.
+        C{graphviz} emits valid graphviz data.
         """
-        p = subprocess.Popen("dot", stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE)
-        out, err = p.communicate("".join(sampleMachine().asDigraph())
-                                 .encode("utf-8"))
+        digraph = sampleMachine().asDigraph()
+        text = "".join(digraph).encode("utf-8")
+        p = subprocess.Popen("dot", stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        out, err = p.communicate(text)
         self.assertEqual(p.returncode, 0)
 
 
@@ -244,13 +273,25 @@ class SpotChecks(TestCase):
 
     def test_containsMachineFeatures(self):
         """
-        The output of L{graphviz} should contain the names of the states,
-        inputs, outputs in the state machine.
+        The output of L{graphviz.Digraph} should contain the names of the
+        states, inputs, outputs in the state machine.
         """
         gvout = "".join(sampleMachine().asDigraph())
         self.assertIn("begin", gvout)
         self.assertIn("end", gvout)
         self.assertIn("go", gvout)
+        self.assertIn("out", gvout)
+
+    def test_containsTypeMachineFeatures(self):
+        """
+        The output of L{graphviz.Digraph} should contain the names of the states,
+        inputs, outputs in the state machine.
+        """
+        gvout = "".join(sampleTypeMachine().asDigraph())
+        self.assertIn("begin", gvout)
+        self.assertIn("end", gvout)
+        self.assertIn("go", gvout)
+        self.assertIn("data:buildit", gvout)
         self.assertIn("out", gvout)
 
 
@@ -299,35 +340,33 @@ class FakeMethodicalMachine(object):
 @skipIf(not isGraphvizInstalled(), "Graphviz tools are not installed.")
 @skipIf(not isTwistedInstalled(), "Twisted is not installed.")
 class VisualizeToolTests(TestCase):
-
     def setUp(self):
         self.digraphRecorder = RecordsDigraphActions()
         self.fakeDigraph = FakeDigraph(self.digraphRecorder)
 
-        self.fakeProgname = 'tool-test'
-        self.fakeSysPath = ['ignored']
+        self.fakeProgname = "tool-test"
+        self.fakeSysPath = ["ignored"]
         self.collectedOutput = []
-        self.fakeFQPN = 'fake.fqpn'
+        self.fakeFQPN = "fake.fqpn"
 
     def collectPrints(self, *args):
-        self.collectedOutput.append(' '.join(args))
+        self.collectedOutput.append(" ".join(args))
 
     def fakeFindMachines(self, fqpn):
         yield fqpn, FakeMethodicalMachine(self.fakeDigraph)
 
-    def tool(self,
-             progname=None,
-             argv=None,
-             syspath=None,
-             findMachines=None,
-             print=None):
+    def tool(
+        self, progname=None, argv=None, syspath=None, findMachines=None, print=None
+    ):
         from .._visualize import tool
+
         return tool(
             _progname=progname or self.fakeProgname,
             _argv=argv or [self.fakeFQPN],
             _syspath=syspath or self.fakeSysPath,
             _findMachines=findMachines or self.fakeFindMachines,
-            _print=print or self.collectPrints)
+            _print=print or self.collectPrints,
+        )
 
     def test_checksCurrentDirectory(self):
         """
@@ -336,15 +375,15 @@ class VisualizeToolTests(TestCase):
         directory.
         """
         self.tool(argv=[self.fakeFQPN])
-        self.assertEqual(self.fakeSysPath[0], '')
+        self.assertEqual(self.fakeSysPath[0], "")
 
     def test_quietHidesOutput(self):
         """
         Passing -q/--quiet hides all output.
         """
-        self.tool(argv=[self.fakeFQPN, '--quiet'])
+        self.tool(argv=[self.fakeFQPN, "--quiet"])
         self.assertFalse(self.collectedOutput)
-        self.tool(argv=[self.fakeFQPN, '-q'])
+        self.tool(argv=[self.fakeFQPN, "-q"])
         self.assertFalse(self.collectedOutput)
 
     def test_onlySaveDot(self):
@@ -352,18 +391,16 @@ class VisualizeToolTests(TestCase):
         Passing an empty string for --image-directory/-i disables
         rendering images.
         """
-        for arg in ('--image-directory', '-i'):
+        for arg in ("--image-directory", "-i"):
             self.digraphRecorder.reset()
             self.collectedOutput = []
 
-            self.tool(argv=[self.fakeFQPN, arg, ''])
-            self.assertFalse(any("image" in line
-                                 for line in self.collectedOutput))
+            self.tool(argv=[self.fakeFQPN, arg, ""])
+            self.assertFalse(any("image" in line for line in self.collectedOutput))
 
             self.assertEqual(len(self.digraphRecorder.saveCalls), 1)
             (call,) = self.digraphRecorder.saveCalls
-            self.assertEqual("{}.dot".format(self.fakeFQPN),
-                             call['filename'])
+            self.assertEqual("{}.dot".format(self.fakeFQPN), call["filename"])
 
             self.assertFalse(self.digraphRecorder.renderCalls)
 
@@ -372,19 +409,17 @@ class VisualizeToolTests(TestCase):
         Passing an empty string for --dot-directory/-d disables saving dot
         files.
         """
-        for arg in ('--dot-directory', '-d'):
+        for arg in ("--dot-directory", "-d"):
             self.digraphRecorder.reset()
             self.collectedOutput = []
-            self.tool(argv=[self.fakeFQPN, arg, ''])
+            self.tool(argv=[self.fakeFQPN, arg, ""])
 
-            self.assertFalse(any("dot" in line
-                                 for line in self.collectedOutput))
+            self.assertFalse(any("dot" in line for line in self.collectedOutput))
 
             self.assertEqual(len(self.digraphRecorder.renderCalls), 1)
             (call,) = self.digraphRecorder.renderCalls
-            self.assertEqual("{}.dot".format(self.fakeFQPN),
-                             call['filename'])
-            self.assertTrue(call['cleanup'])
+            self.assertEqual("{}.dot".format(self.fakeFQPN), call["filename"])
+            self.assertTrue(call["cleanup"])
 
             self.assertFalse(self.digraphRecorder.saveCalls)
 
@@ -393,21 +428,25 @@ class VisualizeToolTests(TestCase):
         Passing different directories to --image-directory and --dot-directory
         writes images and dot files to those directories.
         """
-        imageDirectory = 'image'
-        dotDirectory = 'dot'
-        self.tool(argv=[self.fakeFQPN,
-                        '--image-directory', imageDirectory,
-                        '--dot-directory', dotDirectory])
+        imageDirectory = "image"
+        dotDirectory = "dot"
+        self.tool(
+            argv=[
+                self.fakeFQPN,
+                "--image-directory",
+                imageDirectory,
+                "--dot-directory",
+                dotDirectory,
+            ]
+        )
 
-        self.assertTrue(any("image" in line
-                            for line in self.collectedOutput))
-        self.assertTrue(any("dot" in line
-                            for line in self.collectedOutput))
+        self.assertTrue(any("image" in line for line in self.collectedOutput))
+        self.assertTrue(any("dot" in line for line in self.collectedOutput))
 
         self.assertEqual(len(self.digraphRecorder.renderCalls), 1)
         (renderCall,) = self.digraphRecorder.renderCalls
         self.assertEqual(renderCall["directory"], imageDirectory)
-        self.assertTrue(renderCall['cleanup'])
+        self.assertTrue(renderCall["cleanup"])
 
         self.assertEqual(len(self.digraphRecorder.saveCalls), 1)
         (saveCall,) = self.digraphRecorder.saveCalls
@@ -418,17 +457,22 @@ class VisualizeToolTests(TestCase):
         Passing the same directory to --image-directory and --dot-directory
         writes images and dot files to that one directory.
         """
-        directory = 'imagesAndDot'
-        self.tool(argv=[self.fakeFQPN,
-                        '--image-directory', directory,
-                        '--dot-directory', directory])
+        directory = "imagesAndDot"
+        self.tool(
+            argv=[
+                self.fakeFQPN,
+                "--image-directory",
+                directory,
+                "--dot-directory",
+                directory,
+            ]
+        )
 
-        self.assertTrue(any("image and dot" in line
-                            for line in self.collectedOutput))
+        self.assertTrue(any("image and dot" in line for line in self.collectedOutput))
 
         self.assertEqual(len(self.digraphRecorder.renderCalls), 1)
         (renderCall,) = self.digraphRecorder.renderCalls
         self.assertEqual(renderCall["directory"], directory)
-        self.assertFalse(renderCall['cleanup'])
+        self.assertFalse(renderCall["cleanup"])
 
         self.assertFalse(len(self.digraphRecorder.saveCalls))

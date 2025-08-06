@@ -1,0 +1,114 @@
+/* File: manage_skills.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #003d66, #0066cc); /* Gradient background */
+    color: #333;
+}
+
+.container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 90%;
+    max-width: 800px;
+    box-sizing: border-box;
+}
+
+.logo {
+    width: 150px; /* Adjust logo size */
+    height: auto;
+    display: block;
+    margin: 0 auto 1rem auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+h1 {
+    color: #003d66;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+h2 {
+    color: #003d66;
+    margin: 1rem 0;
+    font-size: 1.5rem;
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+input[type="text"],
+input[type="submit"],
+select {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+input[type="submit"],
+button {
+    background-color: #003d66;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background-color: #00509e;
+}
+
+.message-list {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-radius: 8px;
+    list-style-type: none;
+    margin: 0;
+}
+
+.message-list li {
+    padding: 0.5rem 0;
+}
+
+.skill-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.skill-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.skill-item select {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}

@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cyah$fbb53^r=ns8b2m6gr_qktb3$u0p3xcsdw6j$ddf-r)6yb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_HOST_USER='vishapsripal0325@gmail.com'
 EMAIL_HOST_PASSWORD='rykfirffjrhtozvl'
@@ -31,7 +31,7 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # settings.py
 
@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -179,3 +180,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 RECAPTCHA_PUBLIC_KEY = '6LePZCIqAAAAAKygQlVABjrVq0VCwxoibbscJVHI' 
 RECAPTCHA_PRIVATE_KEY = '6LePZCIqAAAAACJ2qKO1oz5qU38dBAqAb56UCTtF'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
