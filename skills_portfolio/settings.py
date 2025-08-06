@@ -31,7 +31,9 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS')
+from decouple import Csv
+
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 # settings.py
 
