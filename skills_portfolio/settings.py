@@ -31,9 +31,10 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 
-from decouple import config, Csv
 
-ALLOWED_HOSTS = ['skillsync-8vf2.onrender.com',]
+
+ALLOWED_HOSTS = ['skillsync-8vf2.onrender.com']
+
 
 
 # settings.py
@@ -181,8 +182,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # Where collectstatic places files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-RECAPTCHA_PUBLIC_KEY = '6LePZCIqAAAAAKygQlVABjrVq0VCwxoibbscJVHI' 
-RECAPTCHA_PRIVATE_KEY = '6LePZCIqAAAAACJ2qKO1oz5qU38dBAqAb56UCTtF'
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY') 
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
