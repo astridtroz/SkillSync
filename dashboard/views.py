@@ -43,7 +43,10 @@ def register(request):
                 form.add_error('Passwords entered do not match')
     else:
         form=RegistrationForm()
-    return render(request, 'dashboard/register.html',{'form':form})
+    return render(request, 'dashboard/register.html', {
+        'form': form,
+        'RECAPTCHA_PUBLIC_KEY': settings.RECAPTCHA_PUBLIC_KEY
+    })
 
 def login_view(request):
     if request.method=='POST':

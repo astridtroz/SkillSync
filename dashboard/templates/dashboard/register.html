@@ -6,6 +6,7 @@
     <title>HCLTech Registration Page</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <div class="container">
@@ -19,7 +20,15 @@
                 <button type="submit">Register</button>
                 {% csrf_token %}
                 <div class="form-group">
-                    {{ form.as_p }}
+                 {{ form.username }}
+                    {{ form.email }}
+                    {{ form.user_type }}
+                    {{ form.password1 }}
+                    {{ form.password2 }}
+                    
+                    <!-- reCAPTCHA widget -->
+                    <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
+               
                 </div>
                
             </form>
